@@ -259,7 +259,7 @@ static void setupP2PAccess(int num_devices) {
     int original_device = -1;
     if (!checkHip(hipGetDevice(&original_device),
                   "HipTransport: failed to get current device")) {
-        original_device = -1;
+        return;
     }
 
     auto clearStickyPeerAccessError = [](int src_device, int dst_device) {
@@ -314,7 +314,8 @@ static void setupP2PAccess(int num_devices) {
 
     // Restore the active device so this function is transparent to the caller.
     if (original_device >= 0) {
-        (void)hipSetDevice(original_device);
+        (void)checkHip(hipSetDevice(original_device),
+                       "HipTransport: failed to restore device");
     }
 }
 
